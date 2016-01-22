@@ -1,55 +1,49 @@
 package com.nikolamajcen.hasse.math;
 
+/**
+ * Created by nikolamajcen on 22.01.16..
+ */
+
 import com.nikolamajcen.hasse.helpers.CsvParser;
 
 import java.io.File;
 import java.util.ArrayList;
 
-/**
- * Created by nikolamajcen on 20.01.16..
- */
-
-public class FloydWarshallAlgorithm {
+public class BellmanFordAlgorithm {
 
     public static String[] elements;
+    public static int elementDistances[];
     private static int numberOfElements;
-    public static int distanceMatrix[][];
+    private static int distanceMatrix[][];
+    private static int progressMatrix[][];
 
     public static void openFile(File file) {
         getMatrixFromFile(file);
         validateMatrix();
+        validateelementDistances();
     }
 
-    public static void calculate() {
-        if (distanceMatrix != null) {
-            System.out.println();
-            System.out.println("STEP 0.:");
-            System.out.println("--------");
-            showResults(distanceMatrix);
-
-            for (int m = 0; m < numberOfElements; m++) {
-                for (int i = 0; i < numberOfElements; i++) {
-                    for (int j = 0; j < numberOfElements; j++) {
-                        if(i == j || i == m || j == m) {
-                            continue;
-                        }
-                        if (distanceMatrix[i][m] + distanceMatrix[m][j] < distanceMatrix[i][j]) {
-                            distanceMatrix[i][j] = distanceMatrix[i][m] + distanceMatrix[m][j];
-                        }
+    public static void calculate(int row) {
+        elementDistances[row] = 0;
+        int numberOfSteps = 0;
+        for (int m = 0; m < numberOfElements; m++) {
+            for (int i = 0; i < numberOfElements; i++) {
+                for (int j = 0; j < numberOfElements; j++) {
+                    if (distanceMatrix[i][j] == 9999) {
+                        progressMatrix[i][j] = 9999;
+                        continue;
+                    }
+                    if (elementDistances[j] > elementDistances[i] + distanceMatrix[i][j]) {
+                        elementDistances[j] = elementDistances[i] + distanceMatrix[i][j];
+                        progressMatrix[j][i] = elementDistances[j];
                     }
                 }
-                System.out.println();
-                System.out.println("STEP " + String.valueOf(m + 1) + ".:");
-                if(m > 9) {
-                    System.out.println("---------");
-                } else {
-                    System.out.println("--------");
-                }
-                showResults(distanceMatrix);
             }
-        } else {
-            System.out.println("No file provided.");
         }
+
+        // Not working yet.
+        // showResults(progressMatrix);
+        showSimpleResults(row);
     }
 
     private static void showResults(int[][] matrix) {
@@ -86,13 +80,30 @@ public class FloydWarshallAlgorithm {
         }
     }
 
+    private static void showSimpleResults(int row) {
+        for (int i = 0; i < numberOfElements; i++) {
+            System.out.print(elements[row] + " - ");
+
+            if (elements[i].length() < 7) {
+                System.out.print(elements[i] + "\t\t\t=> ");
+            } else if (elements[i].length() < 11) {
+                System.out.print(elements[i] + "\t\t=> ");
+            } else {
+                System.out.print(elements[i] + "\t=> ");
+            }
+            System.out.println(elementDistances[i]);
+        }
+    }
+
     private static void getMatrixFromFile(File file) {
         ArrayList<ArrayList<String>> values = CsvParser.toList(file);
 
         if (values != null && values.size() > 0) {
             numberOfElements = values.size();
+            elementDistances = new int[numberOfElements];
             elements = new String[numberOfElements];
             distanceMatrix = new int[numberOfElements][numberOfElements];
+            progressMatrix = new int[numberOfElements][numberOfElements];
 
             for (int i = 0; i < numberOfElements; i++) {
                 elements[i] = CsvParser.getRowName(values.get(i));
@@ -111,6 +122,12 @@ public class FloydWarshallAlgorithm {
                     distanceMatrix[i][j] = 9999;
                 }
             }
+        }
+    }
+
+    private static void validateelementDistances() {
+        for (int i = 0; i < numberOfElements; i++) {
+            elementDistances[i] = 9999;
         }
     }
 }
