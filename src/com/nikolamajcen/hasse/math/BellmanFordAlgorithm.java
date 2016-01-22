@@ -25,34 +25,32 @@ public class BellmanFordAlgorithm {
 
     public static void calculate(int row) {
         elementDistances[row] = 0;
-        for (int m = 0; m < numberOfElements; m++) {
-            for (int i = 0; i < numberOfElements; i++) {
-                for (int j = 0; j < numberOfElements; j++) {
-                    if (distanceMatrix[i][j] == 9999) {
-                        progressMatrix[i][j] = 9999;
-                        continue;
-                    }
-
-                    if (elementDistances[j] > elementDistances[i] + distanceMatrix[i][j]) {
-                        elementDistances[j] = elementDistances[i] + distanceMatrix[i][j];
-                        // progressMatrix[j][i] = elementDistances[j];
-                    }
+        for (int i = 0; i < numberOfElements; i++) {
+            for (int j = 0; j < numberOfElements; j++) {
+                if (distanceMatrix[i][j] == 9999) {
+                    progressMatrix[i][j] = 9999;
+                    continue;
                 }
-                for(int j = 0; j < numberOfElements; j++) {
-                    progressMatrix[j][i] = elementDistances [j];
-                    if(j > 0) {
-                        if(progressMatrix[j][i] == 9999 && progressMatrix[j-1][i] != 9999 ) {
-                            progressMatrix[j][i] = progressMatrix[j-1][i];
-                        }
+
+                if (elementDistances[j] > elementDistances[i] + distanceMatrix[i][j]) {
+                    elementDistances[j] = elementDistances[i] + distanceMatrix[i][j];
+                    // progressMatrix[j][i] = elementDistances[j];
+                }
+            }
+            for(int j = 0; j < numberOfElements; j++) {
+                progressMatrix[j][i] = elementDistances [j];
+                if(j > 0) {
+                    if(progressMatrix[j][i] == 9999 && progressMatrix[j-1][i] != 9999 ) {
+                        progressMatrix[j][i] = progressMatrix[j-1][i];
                     }
                 }
             }
         }
 
         // Now working propertly, but final result is showed.
-        System.out.println("Work in progress result:");
-        showResults(progressMatrix);
-        System.out.println("\nOfficial result:");
+        // System.out.println("Work in progress result:");
+        // showResults(progressMatrix);
+        // System.out.println("\nOfficial result:");
         showSimpleResults(row);
     }
 
